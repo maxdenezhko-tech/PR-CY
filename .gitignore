@@ -1,0 +1,17 @@
+target/
+build/
+*.xml
+*.iml
+allure-results/
+.allure/
+
+### Gradle ###
+.gradle
+.kotlin
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+
+### IntelliJ IDEA ###
+/.idea
