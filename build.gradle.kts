@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    alias(libs.plugins.allure)
 }
 
 group = "org.example"
@@ -9,14 +10,44 @@ repositories {
     mavenCentral()
 }
 
+val agent: Configuration by configurations.creating
+
+allure {
+    version.set(libs.versions.allure.get())
+}
+
+
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("com.codeborne:selenide:7.17.0")
-    testImplementation("org.testng:testng:7.12.0")
+    implementation(libs.selenide)
+    implementation(libs.postgresql)
+
+    testImplementation(libs.testng)
+    testImplementation(libs.rest.assured)
+    testImplementation(libs.allure.rest.assured)
+    testImplementation(libs.aspectjweaver)
+    testImplementation(libs.datafaker)
+    testImplementation(libs.poi.ooxml)
+
+    agent(libs.aspectjweaver)
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useTestNG {
+        useDefaultListeners = true
+    }
+
+    setIncludes(listOf("**/*Test.class", "**/*Tests.class"))
+
+    doFirst {
+        jvmArgs("-javaagent:${agent.singleFile}")
+    }
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
+
+tasks.clean {
+    delete(layout.buildDirectory.dir("allure-results"))
+}
+
